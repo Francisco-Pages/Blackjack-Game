@@ -260,7 +260,7 @@ using UnityEngine.InputSystem;
 
 public class CardVisual : MonoBehaviour
 {
-    private bool initalize = false;
+    public bool initalize = false;
 
     [Header("Card")]
     public Card parentCard;
@@ -432,10 +432,10 @@ public class CardVisual : MonoBehaviour
     void Update()
     {
         if (!initalize || parentCard == null) return;
+        CardTilt();
         HandPositioning();
         SmoothFollow();
         FollowRotation();
-        CardTilt();
         PlayThresholdFeedback();
     }
 

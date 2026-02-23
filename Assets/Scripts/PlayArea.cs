@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class PlayArea : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class PlayArea : MonoBehaviour
 
     [SerializeField] private TMP_Text loseProbabilityText;
     public float loseProbability;
+
+    public List<CardVisual> faceDownCards;
 
     private void Update()
     {

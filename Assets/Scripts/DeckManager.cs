@@ -14,14 +14,18 @@ public class DeckManager : MonoBehaviour
 
     [SerializeField] private TMP_Text cardsInDeckText;
     private VisualCardsHandler visualHandler;
-    [HideInInspector] public CardVisual cardVisual;
 
+    [SerializeField] private PlayArea playArea;
     private Canvas canvas;
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Sprite cardBack;
 
+    public GameObject deckImagePrefab;
+    private float deckImageOffset;
+    public GameObject deckPosition;
+    private Vector3 deckTopPosition;
+
     public int runningCount;
-    public List<CardVisual> faceDownCards;
 
     public AudioSource audioSource;
     public AudioClip clip;
@@ -40,6 +44,30 @@ public class DeckManager : MonoBehaviour
         {
             runningCount += GetCardCountValue(card);
         }
+            StartCoroutine(FillDeck());
+    }
+
+    private IEnumerator FillDeck()
+    {
+        for (int i = 0; i < deckData.Count; i++)
+        {
+            GameObject img = Instantiate(deckImagePrefab, deckPosition.transform);
+
+            deckTopPosition = new Vector3(i * 0.3f,i * 0.3f,0f);
+            img.transform.localPosition = deckTopPosition;
+            yield return new WaitForSecondsRealtime(0.01f);
+        }
+        yield return new WaitForSecondsRealtime(0.7f);
+    }
+    public IEnumerator AddTopCard()
+    {
+        yield return new WaitForSecondsRealtime(0.8f);
+        for (int i = 0; i < deckData.Count; i++)
+        {
+            deckTopPosition = new Vector3(i * 0.3f,i * 0.3f,0f);
+        }
+        GameObject img = Instantiate(deckImagePrefab, deckPosition.transform);
+        img.transform.localPosition = deckTopPosition;
     }
 
     private void Update()
@@ -63,11 +91,11 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public CardVisual DealFaceCard(GameObject cardGroup, bool faceUp=true, bool animate=true)
+    public void DealFaceCard(GameObject cardGroup, bool faceUp=true, bool animate=true)
     {
         if (deckData.Count == 0)
         {
-            return null;
+            return;
         }
         // get the visualHandler and canvas references
         visualHandler = FindFirstObjectByType<VisualCardsHandler>();
@@ -83,20 +111,25 @@ public class DeckManager : MonoBehaviour
         deckData.RemoveAt(0);
 
         // set the visuals to the card
-        cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
+        CardVisual cardVisual = Instantiate(cardVisualPrefab, transform).GetComponent<CardVisual>();
+        cardVisual.transform.localPosition = deckTopPosition;
         newCardScript.cardVisual = cardVisual;
         cardVisual.Initialize(newCardScript);
         
         if (!faceUp)
         {
             cardVisual.SetFaceUp(false, false);
-            faceDownCards.Add(cardVisual);
+            playArea.faceDownCards.Add(cardVisual);
         }
         else
         {
             runningCount += GetCardCountValue(newCardScript.cardData);
         }
-
+        if (transform.childCount > 0)
+        {
+            Transform lastChild = deckPosition.transform.GetChild(deckPosition.transform.childCount - 1);
+            Destroy(lastChild.gameObject);
+        }
         // get the card area to anchor the cards to 
         // and add the card to that card area cards list
         HorizontalCardHolder cardGroupScript = cardGroup.GetComponent<HorizontalCardHolder>();
@@ -115,8 +148,6 @@ public class DeckManager : MonoBehaviour
         newCardScript.BeginDragEvent.AddListener(cardGroupScript.BeginDrag);
         newCardScript.EndDragEvent.AddListener(cardGroupScript.EndDrag);        
         
-        
-        return cardVisual;
     }
 
     public void AddCard(CardData cardData)

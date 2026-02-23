@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     private HorizontalCardHolder playerCardHolderScript;
     private HorizontalCardHolder dealerCardHolderScript;
     private HorizontalCardHolder handCardHolderScript;
-    private CardVisual dealerHoleCard;
 
     [SerializeField] private PlayArea playArea;
 
@@ -147,7 +146,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.2f);
             deckManager.DealFaceCard(playingCardGroup);
             yield return new WaitForSecondsRealtime(0.2f);
-            dealerHoleCard = deckManager.DealFaceCard(jokerCardGroup, false, false);
+            deckManager.DealFaceCard(jokerCardGroup, false, false);
             ChangeState(GameState.PlayerTurn);
         }
 
@@ -171,14 +170,14 @@ public class GameManager : MonoBehaviour
         Debug.Log("Dealer's turn.");
         isPlayerTurn = false;
 
-        if (dealerHoleCard != null)
+        foreach (CardVisual cardVisual in playArea.faceDownCards)
         {
-            dealerHoleCard.SetFaceUp(true);
-            deckManager.runningCount += deckManager.GetCardCountValue(dealerHoleCard.parentCard.cardData);
-            dealerCardHolderScript.UpdateCardsList();
-            deckManager.faceDownCards.Remove(dealerHoleCard);
-            
+            cardVisual.SetFaceUp(true);
+            deckManager.runningCount += deckManager.GetCardCountValue(cardVisual.parentCard.cardData);
         }
+            playArea.faceDownCards.Clear();
+            dealerCardHolderScript.UpdateCardsList();
+
         StartCoroutine(DealerPlay());
     }
     private void ResolveRound()

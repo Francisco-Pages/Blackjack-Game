@@ -358,8 +358,8 @@ MonoBehaviour:
   spriteChild: {fileID: 7006996992505307320}
   cardBackSprite: {fileID: 21300000, guid: a645499deac5944f593fdcd569acc1e7, type: 3}
   faceUp: 1
-  flipDuration: 0.5
-  followSpeed: 8
+  flipDuration: 0.2
+  followSpeed: 7
   rotationAmount: 70
   rotationSpeed: 50
   autoTiltAmount: 15
