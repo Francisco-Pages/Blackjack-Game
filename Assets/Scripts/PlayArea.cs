@@ -151,6 +151,9 @@ public class PlayArea : MonoBehaviour
         playerHandTotal = 0;
         playerAceCount = 0;
 
+        loseProbability = 0f;
+        loseProbabilityText.text = "Chance of losing: 0%";
+
         faceDownCards.Clear();
     }
 }

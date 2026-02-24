@@ -35,6 +35,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     [Header("States")]
     public bool isHovering;
     public bool isDragging;
+    [HideInInspector] public bool isPlayable;
     [HideInInspector] public bool wasDragged;
 
     [Header("Events")]

@@ -325,6 +325,12 @@ public class CardVisual : MonoBehaviour
     [Header("Curve")]
     [SerializeField] private CurveParameters curve;
 
+    [Header("Play Threshold Feedback")]
+    [SerializeField] private float playThresholdY = -1.5f;
+    [SerializeField] private float playReadyScale = 1.5f;
+    [SerializeField] private float playReadyTransition = 0.2f;
+    private bool wasAbovePlayThreshold = false;
+
     private float curveYOffset;
     private float curveRotationOffset;
     private Coroutine pressCoroutine;
@@ -363,17 +369,23 @@ public class CardVisual : MonoBehaviour
 
     private void PlayThresholdFeedback()
     {
-        if (!parentCard.isDragging) return;
+        if (!parentCard.isDragging || !parentCard.isPlayable) return;
 
-        float draggedY = cardTransform.position.y;
+        bool isAbove = cardTransform.position.y > playThresholdY;
 
-        if (draggedY > - 1.5)
+        if (isAbove == wasAbovePlayThreshold) return;
+
+        wasAbovePlayThreshold = isAbove;
+
+        transform.DOKill();
+        if (isAbove)
         {
-            transform.DOScale(1.5f, 0.1f);
+            transform.DOScale(playReadyScale, playReadyTransition).SetEase(Ease.OutBack);
+            shakeParent.DOPunchRotation(Vector3.forward * 15f, playReadyTransition, 6, 0.5f);
         }
         else
         {
-            transform.DOScale(scaleOnSelect, 0.1f);
+            transform.DOScale(scaleOnSelect, playReadyTransition).SetEase(Ease.OutQuad);
         }
     }
 
@@ -615,7 +627,7 @@ public class CardVisual : MonoBehaviour
     public void EndDrag(Card card)
     {
         canvas.overrideSorting = false;
-
+        wasAbovePlayThreshold = false;
         transform.DOScale(1, scaleTransition)
             .SetEase(scaleEase);
     }

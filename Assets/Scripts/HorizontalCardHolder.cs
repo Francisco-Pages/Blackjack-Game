@@ -86,6 +86,8 @@ public class HorizontalCardHolder : MonoBehaviour
     public void UpdateCardsList()
     {
         cards = GetComponentsInChildren<Card>().ToList();
+        foreach (Card card in cards)
+            card.isPlayable = isHolderPlayable;
         OnCardsListUpdated?.Invoke(gameObject);
         StartCoroutine(Frame());
 
