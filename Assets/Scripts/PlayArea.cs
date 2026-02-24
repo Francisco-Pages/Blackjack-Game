@@ -41,7 +41,6 @@ public class PlayArea : MonoBehaviour
     {
         if (cardHolderObj.GetComponent<HorizontalCardHolder>() == playerHand)
         {
-            Debug.Log("Player hand updated.");
             playerHandTotal = 0;
             playerAceCount = 0;
             foreach (Card card in playerHand.cards)
@@ -51,12 +50,12 @@ public class PlayArea : MonoBehaviour
                 if (cardValue == 11)
                     playerAceCount++;
             }
+            GetPlayerHandValue();
             loseProbability = GetBustProbability();
             loseProbabilityText.text = $"Chance of losing: {loseProbability*100}%";
         }
         if (cardHolderObj.GetComponent<HorizontalCardHolder>() == dealerHand)
         {
-            Debug.Log("Dealer hand updated.");
             dealerHandTotal = 0;
             dealerAceCount = 0;
             foreach (Card card in dealerHand.cards)
@@ -69,6 +68,7 @@ public class PlayArea : MonoBehaviour
                         dealerAceCount++;
                 }
             }
+            GetDealerHandValue();
         }
     }
 
