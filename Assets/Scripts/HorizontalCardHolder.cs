@@ -241,7 +241,7 @@ public class HorizontalCardHolder : MonoBehaviour
         AddCardListeners(newCardScript, toCardHolderScript);
     }
 
-    public void DiscardCard(Card discardedCard)
+    public void DiscardCard(Card discardedCard, System.Action onArrived = null)
     {
         if (cards.Count == 0)
         {
@@ -281,7 +281,7 @@ public class HorizontalCardHolder : MonoBehaviour
 
 
         // this.UpdateCardsList();
-        StartCoroutine(DeleteCardAfterWait(discardedCard));
+        StartCoroutine(DeleteCardAfterWait(discardedCard, onArrived));
         // give it an individual name, in this case the number of the card from the deck
         
         // get the visualHandler and canvas references
@@ -342,7 +342,7 @@ public class HorizontalCardHolder : MonoBehaviour
 
 
 
-    private IEnumerator DeleteCardAfterWait(Card cardToDiscard)
+    private IEnumerator DeleteCardAfterWait(Card cardToDiscard, System.Action onArrived = null)
     {
         Vector3 localTarget = new Vector3(_discardPileCount * 0.3f, _discardPileCount * 0.3f, 0f);
         Vector3 flyTarget = discardPile.transform.TransformPoint(localTarget);
@@ -366,20 +366,21 @@ public class HorizontalCardHolder : MonoBehaviour
                 img.transform.localScale = Vector3.one * 0.75f;
             }
             StartCoroutine(PauseAfterArrive(visual));
-            // Destroy(visual.gameObject);
             OnCardDiscarded?.Invoke(discardedData);
+            onArrived?.Invoke();
         });
 
         yield break;
     }
+
     private IEnumerator PauseAfterArrive(CardVisual visual)
     {
         yield return new WaitForSecondsRealtime(0.1f);
         Destroy(visual.gameObject);
     }
 
-    public void DiscardFirstCard()
+    public void DiscardFirstCard(System.Action onArrived = null)
     {
-        DiscardCard(cards[0]);
+        DiscardCard(cards[0], onArrived);
     }
 }

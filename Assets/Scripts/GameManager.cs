@@ -358,8 +358,11 @@ public class GameManager : MonoBehaviour
     private IEnumerator DiscardSequence()
     {
         deckManager.deckData.Shuffle();
-        handCardHolderScript.DiscardFirstCard();
-        yield return new WaitForSeconds(0.5f); // Small pause after player ends
+
+        bool arrived = false;
+        handCardHolderScript.DiscardFirstCard(onArrived: () => arrived = true);
+        yield return new WaitUntil(() => arrived);
+        yield return new WaitForSecondsRealtime(0.2f);
         deckManager.DealFaceCard(consumableCardGroup);
     }
 

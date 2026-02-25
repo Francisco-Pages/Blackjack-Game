@@ -146,15 +146,17 @@ public class DeckManager : MonoBehaviour
         newCardScript.cardVisual = cardVisual;
         cardVisual.Initialize(newCardScript);
         cardVisual.transform.DOScale(1f, 0.4f).SetEase(Ease.OutBack);
-        
+
+        // Always start face-down
+        cardVisual.SetFaceUp(false, false);
+
         if (!faceUp)
         {
-            cardVisual.SetFaceUp(false, false);
             OnCardDealtFaceDown?.Invoke(cardVisual);
         }
         else
         {
-            CountCard(newCardScript.cardData);
+            StartCoroutine(FlipMidTransfer(cardVisual, newCardScript.cardData));
         }
         if (transform.childCount > 0)
         {
@@ -179,6 +181,13 @@ public class DeckManager : MonoBehaviour
         newCardScript.BeginDragEvent.AddListener(cardGroupScript.BeginDrag);
         newCardScript.EndDragEvent.AddListener(cardGroupScript.EndDrag);        
         
+    }
+
+    private IEnumerator FlipMidTransfer(CardVisual cardVisual, CardData cardData)
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+        cardVisual.SetFaceUp(true);
+        CountCard(cardData);
     }
 
     public void AddCard(CardData cardData)
